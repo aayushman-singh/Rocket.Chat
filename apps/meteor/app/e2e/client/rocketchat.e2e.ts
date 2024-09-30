@@ -67,6 +67,8 @@ class E2E extends Emitter {
 
 	public privateKey: CryptoKey | undefined;
 
+	public publicKey: string | undefined;
+
 	private keyDistributionInterval: ReturnType<typeof setInterval> | null;
 
 	private state: E2EEState;
@@ -418,6 +420,7 @@ class E2E extends Emitter {
 		Accounts.storageLocation.removeItem('private_key');
 		this.instancesByRoomId = {};
 		this.privateKey = undefined;
+		this.publicKey = undefined;
 		this.started = false;
 		this.keyDistributionInterval && clearInterval(this.keyDistributionInterval);
 		this.keyDistributionInterval = null;
@@ -459,6 +462,8 @@ class E2E extends Emitter {
 			this.setState(E2EEState.ERROR);
 			return this.error('Error importing private key: ', error);
 		}
+
+		this.publicKey = public_key;
 	}
 
 	async createAndLoadKeys(): Promise<void> {
@@ -476,6 +481,7 @@ class E2E extends Emitter {
 		try {
 			const publicKey = await exportJWKKey(key.publicKey);
 
+			this.publicKey = JSON.stringify(publicKey);
 			Accounts.storageLocation.setItem('public_key', JSON.stringify(publicKey));
 		} catch (error) {
 			this.setState(E2EEState.ERROR);
