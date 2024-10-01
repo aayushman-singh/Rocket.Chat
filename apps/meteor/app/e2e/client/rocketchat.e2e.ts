@@ -453,6 +453,7 @@ class E2E extends Emitter {
 
 	async loadKeys({ public_key, private_key }: { public_key: string; private_key: string }): Promise<void> {
 		Accounts.storageLocation.setItem('public_key', public_key);
+		this.publicKey = public_key;
 
 		try {
 			this.privateKey = await importRSAKey(EJSON.parse(private_key), ['decrypt']);
@@ -462,8 +463,6 @@ class E2E extends Emitter {
 			this.setState(E2EEState.ERROR);
 			return this.error('Error importing private key: ', error);
 		}
-
-		this.publicKey = public_key;
 	}
 
 	async createAndLoadKeys(): Promise<void> {
